@@ -6,16 +6,16 @@ async function getHeaders() {
     let apiKey = localStorage.getItem("apiKey");
 
     if (!token) {
-        console.warn("❌ Ingen token funnet. API-kall vil ikke fungere.");
+        console.warn("Ingen token funnet. API-kall vil ikke fungere.");
         return null;
     }
 
     if (!apiKey) {
-        console.warn("⚠️ Ingen API-nøkkel funnet. Forsøker å hente en ny...");
+        console.warn("Ingen API-nøkkel funnet. Forsøker å hente en ny...");
         apiKey = await fetchApiKey(); // Hent API-nøkkel hvis den ikke finnes
 
         if (!apiKey) {
-            console.error("🚨 Klarte ikke hente API-nøkkel. API-kall vil mislykkes.");
+            console.error("Klarte ikke hente API-nøkkel. API-kall vil mislykkes.");
             return null;
         }
     }
@@ -51,11 +51,11 @@ export async function fetchApiKey() {
             return null;
         }
 
-        console.log("✅ API-nøkkel hentet:", data.data.key);
+        console.log("API-nøkkel hentet:", data.data.key);
         localStorage.setItem("apiKey", data.data.key);
         return data.data.key;
     } catch (error) {
-        console.error("❌ Feil ved henting av API-nøkkel:", error);
+        console.error("Feil ved henting av API-nøkkel:", error);
         return null;
     }
 }

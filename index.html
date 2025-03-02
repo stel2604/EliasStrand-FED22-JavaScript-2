@@ -1,81 +1,121 @@
 <!DOCTYPE html>
 <html lang="no">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Sosial Media Plattform</title>
-    <link rel="stylesheet" href="css/styles.css">
-</head>
-<body>
-
+    <link rel="stylesheet" href="css/styles.css" />
+  </head>
+  <body>
     <!-- Navigasjonsmeny (Vises kun etter innlogging) -->
-    <nav id="navbar" class="navbar" style="display: none;">
-        <h1 class="nav-title">Sosial Media Plattform</h1>
-        <button id="logout-btn" class="logout-button">Logg ut</button>
+    <nav id="navbar" class="navbar" style="display: none">
+      <h1 class="nav-title">Sosial Media Plattform</h1>
+      <button id="logout-btn" class="logout-button">Logg ut</button>
     </nav>
 
     <div class="container">
-        <main>
-            <!-- Innloggingsskjema -->
-            <section id="login-section" class="form-container">
-                <h2>Logg inn</h2>
-                <form id="login-form">
-                    <input type="email" id="login-email" placeholder="E-post" required>
-                    <input type="password" id="login-password" placeholder="Passord" required>
-                    <button type="submit">Logg inn</button>
-                    <button type="button" id="switch-to-register" class="secondary-btn">
-                        Har du ikke en konto? Registrer deg
-                    </button>
-                </form>
-            </section>
+      <main>
+        <!-- Innloggingsskjema -->
+        <section id="login-section" class="form-container">
+          <h2>Logg inn</h2>
+          <form id="login-form">
+            <input
+              type="email"
+              id="login-email"
+              placeholder="E-post"
+              required
+            />
+            <input
+              type="password"
+              id="login-password"
+              placeholder="Passord"
+              required
+            />
+            <button type="submit">Logg inn</button>
+            <button type="button" id="switch-to-register" class="secondary-btn">
+              Har du ikke en konto? Registrer deg
+            </button>
+          </form>
+        </section>
 
-            <!-- Registreringsskjema -->
-            <section id="register-section" class="form-container" style="display: none;">
-                <h2>Registrer deg</h2>
-                <form id="register-form">
-                    <input type="text" id="register-name" placeholder="Brukernavn" required>
-                    <input type="email" id="register-email" placeholder="E-post (@noroff.no)" required>
-                    <input type="password" id="register-password" placeholder="Passord" required>
-                    <button type="submit">Registrer</button>
-                    <button type="button" id="switch-to-login" class="secondary-btn">
-                        Har du allerede en konto? Logg inn
-                    </button>
-                </form>
-            </section>
+        <!-- Registreringsskjema -->
+        <section
+          id="register-section"
+          class="form-container"
+          style="display: none"
+        >
+          <h2>Registrer deg</h2>
+          <form id="register-form">
+            <input
+              type="text"
+              id="register-name"
+              placeholder="Brukernavn"
+              required
+            />
+            <input
+              type="email"
+              id="register-email"
+              placeholder="E-post (@noroff.no)"
+              required
+            />
+            <input
+              type="password"
+              id="register-password"
+              placeholder="Passord"
+              required
+            />
+            <button type="submit">Registrer</button>
+            <button type="button" id="switch-to-login" class="secondary-btn">
+              Har du allerede en konto? Logg inn
+            </button>
+          </form>
+        </section>
 
-            <!-- Innholdsfeed -->
-            <div id="feed" style="display: none;">
-                <h2>Innholdsfeed</h2>
+        <!-- Innholdsfeed -->
+        <div id="feed" style="display: none">
+          <h2>Innholdsfeed</h2>
 
-                <!-- Profilseksjon -->
-                <div class="profile">
-                    <img id="profile-image" src="img/profile.jpg" alt="Bruker" class="profile-img">
-                    <span id="username">Ukjent bruker</span>
-                </div>
+          <!-- Profilseksjon -->
+          <div class="profile">
+            <img
+              id="profile-image"
+              src="img/profile.jpg"
+              alt="Bruker"
+              class="profile-img"
+            />
+            <span id="username">Ukjent bruker</span>
+          </div>
 
-                <!-- Søkefelt -->
-                <input type="text" id="search-input" placeholder="Søk etter innlegg...">
+          <!-- Søkefelt -->
+          <input
+            type="text"
+            id="search-input"
+            placeholder="Søk etter innlegg..."
+          />
 
-                <!-- Opprett innlegg -->
-                <form id="new-post-form">
-                    <input type="text" id="post-title" placeholder="Tittel" required>
-                    <textarea id="post-content" placeholder="Skriv noe..." required></textarea>
-                    <input type="file" id="post-image">
-                    <button type="submit">Publiser</button>
-                </form>
+          <!-- Opprett innlegg -->
+          <form id="new-post-form">
+            <input type="text" id="post-title" placeholder="Tittel" required />
+            <textarea
+              id="post-content"
+              placeholder="Skriv noe..."
+              required
+            ></textarea>
+            <input type="file" id="post-image" />
+            <button type="submit">Publiser</button>
+          </form>
 
-                <!-- Innleggsliste -->
-                <div id="posts-container">
-                    <p>Ingen innlegg funnet.</p>
-                </div>
-            </div>
-        </main>
+          <!-- Innleggsliste -->
+          <div id="posts-container">
+            <p>Ingen innlegg funnet.</p>
+          </div>
+        </div>
+      </main>
     </div>
 
     <!-- Koble til main.js -->
     <script type="module" src="JavaScript/api.mjs"></script>
     <script type="module" src="JavaScript/auth.mjs"></script>
     <script type="module" src="JavaScript/app.mjs"></script>
-    
-</body>
+  </body>
 </html>
