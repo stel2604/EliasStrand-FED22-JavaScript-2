@@ -1,126 +1,100 @@
 const API_BASE_URL = "https://v2.api.noroff.dev";
 
-// **Registrer bruker**
+// Hardkodet token og API-nøkkel for utviklingsformål
+const HARDCODED_TOKEN = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...";
+const HARDCODED_API_KEY = "ca269b3b-01c9-4161-8f8e-ca044731af19";
+
+/**
+ * Registrerer en ny bruker via Noroff API
+ * @param {string} username - Brukernavn (må være gyldig)
+ * @param {string} email - Gyldig Noroff-e-post (f.eks. brukernavn@stud.noroff.no)
+ * @param {string} password - Passord med minst 8 tegn
+ * @returns {Promise<Object|null>} Brukerdata ved suksess eller null ved feil
+ */
 export async function registerUser(username, email, password) {
-    try {
-        const requestBody = {
-            name: username,
-            email,
-            password,
-            bio: "Dette er min profilbio",
-            avatar: { url: "", alt: "Brukerens avatar" }
-        };
+  try {
+    const requestBody = {
+      name: username,
+      email,
+      password,
+      bio: "Dette er min profilbio",
+      avatar: {
+        url: "https://img.service.com/avatar.jpg",
+        alt: "Min avatar"
+      },
+      banner: {
+        url: "https://img.service.com/banner.jpg",
+        alt: "Min bannertekst"
+      },
+      venueManager: true
+    };
 
-        const response = await fetch(`${API_BASE_URL}/auth/register`, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(requestBody)
-        });
+    const response = await fetch(`${API_BASE_URL}/auth/register`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(requestBody)
+    });
 
-        if (!response.ok) {
-            throw new Error("Registrering feilet.");
-        }
+    const data = await response.json();
 
-        console.log("Registrering vellykket!");
-        alert("Registrering vellykket! Du kan nå logge inn.");
-        return await response.json();
-    } catch (error) {
-        console.error("Feil ved registrering:", error);
+    if (!response.ok) {
+      const message = data.errors?.[0]?.message || "Ukjent feil.";
+      alert(`Registrering feilet. Feilkode: ${response.status}. Melding: ${message}`);
+      return null;
     }
+
+    alert("Registrering vellykket! Du kan nå logge inn.");
+    return data;
+  } catch {
+    alert("Uventet feil under registrering.");
+    return null;
+  }
 }
 
-// **Logg inn bruker**
+/**
+ * Logger inn brukeren og lagrer nødvendige verdier i localStorage
+ * @param {string} email - Brukerens e-post
+ * @param {string} password - Brukerens passord
+ * @returns {Promise<Object|null>} Brukerdata eller null ved feil
+ */
 export async function loginUser(email, password) {
-    try {
-        console.log("Starter innlogging for:", email);
+  try {
+    const response = await fetch(`${API_BASE_URL}/auth/login`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email, password })
+    });
 
-        const response = await fetch(`${API_BASE_URL}/auth/login`, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ email, password })
-        });
+    const data = await response.json();
 
-        const data = await response.json();
-        console.log("API-respons ved innlogging:", data);
-
-        if (!response.ok) {
-            alert("Innlogging feilet. Sjekk brukernavn og passord.");
-            return;
-        }
-
-        if (!data.data || !data.data.accessToken) {
-            console.error("API-et returnerte ikke et gyldig token.");
-            alert("Innlogging feilet. Prøv igjen.");
-            return;
-        }
-
-        console.log("Innlogging vellykket! Token mottatt:", data.data.accessToken);
-
-        // **Hente API-nøkkel**
-        const apiKey = await fetchApiKey(data.data.accessToken);
-        if (!apiKey) {
-            alert("Innlogging vellykket, men API-nøkkel mangler. Prøv å generere en manuelt.");
-            return;
-        }
-
-        console.log("API-nøkkel mottatt:", apiKey);
-
-        let avatarUrl = data.data.avatar?.url || "img/profile.jpg";
-
-        // **Lagre API-nøkkel, token og brukerinformasjon i localStorage**
-        localStorage.setItem("accessToken", data.data.accessToken);
-        localStorage.setItem("apiKey", apiKey);
-        localStorage.setItem("username", data.data.name);
-        localStorage.setItem("avatarUrl", avatarUrl);
-
-        console.log("Lagring fullført:", {
-            token: localStorage.getItem("accessToken"),
-            apiKey: localStorage.getItem("apiKey"),
-            username: localStorage.getItem("username"),
-            avatar: localStorage.getItem("avatarUrl")
-        });
-
-        alert("Innlogging vellykket!");
-        return data;
-    } catch (error) {
-        console.error("Feil ved innlogging:", error);
-        alert("Innlogging feilet. Prøv igjen senere.");
+    if (!response.ok || !data.data?.accessToken) {
+      alert("Innlogging feilet. Sjekk brukernavn og passord.");
+      return null;
     }
+
+    // Lagre hardkodet token og brukerdata
+    localStorage.setItem("accessToken", HARDCODED_TOKEN);
+    localStorage.setItem("apiKey", HARDCODED_API_KEY);
+    localStorage.setItem("username", data.data.name);
+    localStorage.setItem("avatarUrl", data.data.avatar?.url || "img/profile.jpg");
+
+    alert("Innlogging vellykket!");
+    return data;
+  } catch {
+    alert("Innlogging feilet. Prøv igjen senere.");
+    return null;
+  }
 }
 
-// **Hente API-nøkkel**
-async function fetchApiKey(token) {
-    try {
-        const response = await fetch(`${API_BASE_URL}/auth/create-api-key`, {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-                "Authorization": `Bearer ${token}`
-            }
-        });
-
-        const data = await response.json();
-
-        if (!response.ok || !data.data || !data.data.key) {
-            console.error("Kunne ikke hente API-nøkkel:", data);
-            return null;
-        }
-
-        return data.data.key;
-    } catch (error) {
-        console.error("Feil ved henting av API-nøkkel:", error);
-        return null;
-    }
-}
-
-// **Logg ut bruker**
+/**
+ * Logger ut brukeren og fjerner all brukerdata fra localStorage
+ */
 export function logoutUser() {
-    console.log("Brukeren logger ut...");
-    localStorage.removeItem("accessToken");
-    localStorage.removeItem("apiKey");
-    localStorage.removeItem("username");
-    localStorage.removeItem("avatarUrl");
+  localStorage.removeItem("accessToken");
+  localStorage.removeItem("apiKey");
+  localStorage.removeItem("username");
+  localStorage.removeItem("avatarUrl");
 
-    alert("Du er nå logget ut!");
-    window.location.reload();
+  alert("Du er nå logget ut!");
+  window.location.reload();
 }

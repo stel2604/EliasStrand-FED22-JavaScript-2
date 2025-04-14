@@ -1,129 +1,83 @@
 const API_BASE_URL = "https://v2.api.noroff.dev";
 
-// **Hjelpefunksjon for å lage riktige headers med API-nøkkel og token**
-async function getHeaders() {
-    const token = localStorage.getItem("accessToken");
-    let apiKey = localStorage.getItem("apiKey");
+// Hardkodet Noroff-token og API-nøkkel for utvikling/testing
+const HARDCODED_TOKEN = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1lIjoic3RlbDI2MDQiLCJlbWFpbCI6ImVsaXN0cjUxMDU3QHN0dWQubm9yb2ZmLm5vIiwiaWF0IjoxNzQ0MjA3NTIzfQ.uOH1ZBOO5WlN9lq3OdmiVFoJ3hPU25v1rtmrFTAfV8g";
+const HARDCODED_API_KEY = "ca269b3b-01c9-4161-8f8e-ca044731af19";
 
-    if (!token) {
-        console.warn("Ingen token funnet. API-kall vil ikke fungere.");
-        return null;
-    }
-
-    if (!apiKey) {
-        console.warn("Ingen API-nøkkel funnet. Forsøker å hente en ny...");
-        apiKey = await fetchApiKey(); // Hent API-nøkkel hvis den ikke finnes
-
-        if (!apiKey) {
-            console.error("Klarte ikke hente API-nøkkel. API-kall vil mislykkes.");
-            return null;
-        }
-    }
-
-    return {
-        "Content-Type": "application/json",
-        "Authorization": `Bearer ${token}`,
-        "X-Noroff-API-Key": apiKey
-    };
+/**
+ * Henter HTTP headers med autentisering og API-nøkkel
+ * @returns {Object} Headers for alle forespørsler
+ */
+function getHeaders() {
+  return {
+    "Content-Type": "application/json",
+    Authorization: `Bearer ${HARDCODED_TOKEN}`,
+    "X-Noroff-API-Key": HARDCODED_API_KEY,
+  };
 }
 
-// **Hente API-nøkkel hvis den mangler**
-export async function fetchApiKey() {
-    const token = localStorage.getItem("accessToken");
-    if (!token) {
-        console.error("Kan ikke hente API-nøkkel uten gyldig token.");
-        return null;
-    }
-
-    try {
-        const response = await fetch(`${API_BASE_URL}/auth/create-api-key`, {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-                "Authorization": `Bearer ${token}`
-            }
-        });
-
-        const data = await response.json();
-
-        if (!response.ok || !data.data || !data.data.key) {
-            console.error("Kunne ikke hente API-nøkkel:", data);
-            return null;
-        }
-
-        console.log("API-nøkkel hentet:", data.data.key);
-        localStorage.setItem("apiKey", data.data.key);
-        return data.data.key;
-    } catch (error) {
-        console.error("Feil ved henting av API-nøkkel:", error);
-        return null;
-    }
-}
-
-// **Hente innlegg**
+/**
+ * Henter alle innlegg fra Noroff API, inkludert forfatter, kommentarer og reaksjoner
+ * @returns {Promise<Array>} Liste med innlegg eller tom liste ved feil
+ */
 export async function fetchPosts() {
-    const headers = await getHeaders();
-    if (!headers) {
-        alert("API-nøkkel eller token mangler. Logg ut og inn igjen.");
-        return [];
+  try {
+    const response = await fetch(
+      `${API_BASE_URL}/social/posts?_author=true&_comments=true&_reactions=true`,
+      {
+        method: "GET",
+        headers: getHeaders(),
+      }
+    );
+
+    if (!response.ok) {
+      // console.error("Feil ved henting av innlegg:", response.status);
+      return [];
     }
 
-    console.log("Henter innlegg med følgende headers:", headers);
-
-    try {
-        const response = await fetch(`${API_BASE_URL}/social/posts`, {
-            method: "GET",
-            headers: headers
-        });
-
-        if (response.status === 401) {
-            console.error("Ugyldig token eller ikke autorisert tilgang.");
-            alert("Din økt har utløpt eller er ugyldig. Logg ut og inn igjen.");
-            localStorage.removeItem("accessToken");
-            return [];
-        }
-
-        if (!response.ok) {
-            throw new Error(`Feil ved henting av innlegg: ${response.statusText}`);
-        }
-
-        return await response.json();
-    } catch (error) {
-        console.error("Feil ved henting av innlegg:", error);
-        return [];
-    }
+    const data = await response.json();
+    return data.data || [];
+  } catch (error) {
+    // console.error("Uventet feil:", error);
+    return [];
+  }
 }
 
-// **Publisere et nytt innlegg**
-export async function createPost(title, content) {
-    const headers = await getHeaders();
-    if (!headers) {
-        alert("API-nøkkel eller token mangler. Logg ut og inn igjen.");
-        return;
+/**
+ * Oppretter et nytt innlegg med valgfritt bilde
+ * @param {string} title - Tittel på innlegget (påkrevd)
+ * @param {string} body - Tekstinnhold (valgfritt)
+ * @param {string} imageUrl - URL til bilde (valgfritt, må starte med http)
+ * @returns {Promise<Object|null>} Det publiserte innlegget eller null ved feil
+ */
+export async function createPost(title, body = "", imageUrl = "") {
+  const postData = { title, body };
+
+  if (imageUrl && imageUrl.startsWith("http")) {
+    postData.media = {
+      url: imageUrl,
+      alt: "Post image",
+    };
+  }
+
+  try {
+    const response = await fetch(`${API_BASE_URL}/social/posts`, {
+      method: "POST",
+      headers: getHeaders(),
+      body: JSON.stringify(postData),
+    });
+
+    if (!response.ok) {
+      // const error = await response.json();
+      // console.error("Feil ved oppretting av post:", error);
+      throw new Error("Kunne ikke publisere innlegget.");
     }
 
-    console.log("Publiserer innlegg med følgende headers:", headers);
-
-    try {
-        const response = await fetch(`${API_BASE_URL}/social/posts`, {
-            method: "POST",
-            headers: headers,
-            body: JSON.stringify({ title, content })
-        });
-
-        if (response.status === 401) {
-            console.error("Ugyldig token eller ikke autorisert tilgang.");
-            alert("Din økt har utløpt. Logg ut og inn igjen.");
-            localStorage.removeItem("accessToken");
-            return;
-        }
-
-        if (!response.ok) {
-            throw new Error("Kunne ikke publisere innlegget.");
-        }
-
-        return await response.json();
-    } catch (error) {
-        console.error("Feil ved publisering av innlegg:", error);
-    }
+    const data = await response.json();
+    return data.data || null;
+  } catch (error) {
+    // console.error("Uventet feil ved posting:", error);
+    return null;
+  }
 }
+
