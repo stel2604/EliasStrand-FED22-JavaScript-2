@@ -10,7 +10,7 @@
     <!-- Navbar -->
     <nav id="navbar" class="navbar" style="display: none;">
       <h1>Sosial Media Plattform</h1>
-      <button id="logout-btn" class="logout-button">Logg ut</button>
+      <button id="logout-btn" class="logout-button" data-testid="logout-btn">Logg ut</button>
     </nav>
 
     <main>
@@ -19,11 +19,11 @@
         <!-- Login -->
         <section id="login-section" class="form-container">
           <h2>Logg inn</h2>
-          <form id="login-form">
-            <input type="email" id="login-email" placeholder="E-post" required />
-            <input type="password" id="login-password" placeholder="Passord" required />
-            <button type="submit">Logg inn</button>
-            <button type="button" id="switch-to-register" class="secondary-btn">
+          <form id="login-form" data-testid="login-form">
+            <input type="email" id="login-email" placeholder="E-post" required data-testid="login-email" />
+            <input type="password" id="login-password" placeholder="Passord" required data-testid="login-password" />
+            <button type="submit" data-testid="login-btn">Logg inn</button>
+            <button type="button" id="switch-to-register" class="secondary-btn" data-testid="switch-to-register">
               Har du ikke en konto? Registrer deg
             </button>
           </form>
@@ -32,12 +32,12 @@
         <!-- Register -->
         <section id="register-section" class="form-container" style="display: none;">
           <h2>Registrer deg</h2>
-          <form id="register-form">
-            <input type="text" id="register-name" placeholder="Brukernavn" required />
-            <input type="email" id="register-email" placeholder="E-post (@noroff.no)" required />
-            <input type="password" id="register-password" placeholder="Passord" required />
-            <button type="submit">Registrer</button>
-            <button type="button" id="switch-to-login" class="secondary-btn">
+          <form id="register-form" data-testid="register-form">
+            <input type="text" id="register-name" placeholder="Brukernavn" required data-testid="register-name" />
+            <input type="email" id="register-email" placeholder="E-post (@noroff.no)" required data-testid="register-email" />
+            <input type="password" id="register-password" placeholder="Passord" required data-testid="register-password" />
+            <button type="submit" data-testid="register-btn">Registrer</button>
+            <button type="button" id="switch-to-login" class="secondary-btn" data-testid="switch-to-login">
               Har du allerede en konto? Logg inn
             </button>
           </form>
@@ -55,15 +55,15 @@
         </div>
 
         <!-- Opprett innlegg -->
-        <form id="new-post-form">
-          <input type="text" id="post-title" placeholder="Tittel" required />
-          <textarea id="post-content" placeholder="Skriv noe..." required></textarea>
-          <input type="file" id="post-image" />
-          <button type="submit">Publiser</button>
+        <form id="new-post-form" data-testid="new-post-form">
+          <input type="text" id="post-title" placeholder="Tittel" required data-testid="post-title" />
+          <textarea id="post-content" placeholder="Skriv noe..." required data-testid="post-content"></textarea>
+          <input type="file" id="post-image" data-testid="post-image" />
+          <button type="submit" data-testid="post-submit">Publiser</button>
         </form>
 
         <!-- Innlegg -->
-        <div id="posts-container">
+        <div id="posts-container" data-testid="posts-container">
           <p>Ingen innlegg funnet.</p>
         </div>
       </section>
