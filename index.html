@@ -59,12 +59,28 @@
           <input type="text" id="post-title" placeholder="Tittel" required data-testid="post-title" />
           <textarea id="post-content" placeholder="Skriv noe..." required data-testid="post-content"></textarea>
           <input type="file" id="post-image" data-testid="post-image" />
+          <input type="text" id="post-image-url" placeholder="Lim inn bilde-URL (valgfritt)" />
           <button type="submit" data-testid="post-submit">Publiser</button>
         </form>
 
+        <!-- Søk -->
+        <div class="search-bar">
+        <input type="text" id="search-input" placeholder="Søk i innlegg..." />
+       <button id="search-btn">Søk</button>
+        </div>
+
+
+        
         <!-- Innlegg -->
         <div id="posts-container" data-testid="posts-container">
           <p>Ingen innlegg funnet.</p>
+        </div>
+
+        <!-- Paginering -->
+        <div id="pagination-controls" class="pagination">
+          <button id="prev-page-btn" class="pagination-btn">Forrige</button>
+          <span id="page-indicator">Side 1</span>
+          <button id="next-page-btn" class="pagination-btn">Neste</button>
         </div>
       </section>
     </main>
