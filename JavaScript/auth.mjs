@@ -1,8 +1,8 @@
-const API_BASE_URL = "https://v2.api.noroff.dev";
+const API_BASE_URL = 'https://v2.api.noroff.dev';
 
 // Hardkodet token og API-nøkkel for utviklingsformål
-const HARDCODED_TOKEN = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...";
-const HARDCODED_API_KEY = "ca269b3b-01c9-4161-8f8e-ca044731af19";
+const HARDCODED_TOKEN = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...';
+const HARDCODED_API_KEY = 'ca269b3b-01c9-4161-8f8e-ca044731af19';
 
 /**
  * Registrerer en ny bruker via Noroff API
@@ -12,41 +12,50 @@ const HARDCODED_API_KEY = "ca269b3b-01c9-4161-8f8e-ca044731af19";
  * @returns {Promise<Object|null>} Brukerdata ved suksess eller null ved feil
  */
 export async function registerUser(username, email, password) {
+  const isNoroffEmail = /@(stud\.)?noroff\.no$/.test(email);
+
+  if (!isNoroffEmail) {
+    alert('Du må bruke en @noroff.no eller @stud.noroff.no e-post.');
+    return null;
+  }
+
   try {
     const requestBody = {
       name: username,
       email,
       password,
-      bio: "Dette er min profilbio",
+      bio: 'Dette er min profilbio',
       avatar: {
-        url: "https://img.service.com/avatar.jpg",
-        alt: "Min avatar"
+        url: 'https://img.service.com/avatar.jpg',
+        alt: 'Min avatar',
       },
       banner: {
-        url: "https://img.service.com/banner.jpg",
-        alt: "Min bannertekst"
+        url: 'https://img.service.com/banner.jpg',
+        alt: 'Min bannertekst',
       },
-      venueManager: true
+      venueManager: true,
     };
 
     const response = await fetch(`${API_BASE_URL}/auth/register`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(requestBody)
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(requestBody),
     });
 
     const data = await response.json();
 
     if (!response.ok) {
-      const message = data.errors?.[0]?.message || "Ukjent feil.";
-      alert(`Registrering feilet. Feilkode: ${response.status}. Melding: ${message}`);
+      const message = data.errors?.[0]?.message || 'Ukjent feil.';
+      alert(
+        `Registrering feilet. Feilkode: ${response.status}. Melding: ${message}`
+      );
       return null;
     }
 
-    alert("Registrering vellykket! Du kan nå logge inn.");
+    alert('Registrering vellykket! Du kan nå logge inn.');
     return data;
-  } catch {
-    alert("Uventet feil under registrering.");
+  } catch (error) {
+    alert('Uventet feil under registrering.');
     return null;
   }
 }
@@ -60,28 +69,33 @@ export async function registerUser(username, email, password) {
 export async function loginUser(email, password) {
   try {
     const response = await fetch(`${API_BASE_URL}/auth/login`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ email, password })
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email, password }),
     });
 
     const data = await response.json();
 
     if (!response.ok || !data.data?.accessToken) {
-      alert("Innlogging feilet. Sjekk brukernavn og passord.");
+      const message =
+        data.errors?.[0]?.message ||
+        'Innlogging feilet. Sjekk brukernavn og passord.';
+      alert(`Innlogging feilet: ${message}`);
       return null;
     }
 
-    // Lagre hardkodet token og brukerdata
-    localStorage.setItem("accessToken", HARDCODED_TOKEN);
-    localStorage.setItem("apiKey", HARDCODED_API_KEY);
-    localStorage.setItem("username", data.data.name);
-    localStorage.setItem("avatarUrl", data.data.avatar?.url || "img/profile.jpg");
+    localStorage.setItem('accessToken', HARDCODED_TOKEN);
+    localStorage.setItem('apiKey', HARDCODED_API_KEY);
+    localStorage.setItem('username', data.data.name);
+    localStorage.setItem(
+      'avatarUrl',
+      data.data.avatar?.url || 'img/profile.jpg'
+    );
 
-    alert("Innlogging vellykket!");
+    alert('Innlogging vellykket!');
     return data;
-  } catch {
-    alert("Innlogging feilet. Prøv igjen senere.");
+  } catch (error) {
+    alert('Innlogging feilet. Prøv igjen senere.');
     return null;
   }
 }
@@ -90,11 +104,11 @@ export async function loginUser(email, password) {
  * Logger ut brukeren og fjerner all brukerdata fra localStorage
  */
 export function logoutUser() {
-  localStorage.removeItem("accessToken");
-  localStorage.removeItem("apiKey");
-  localStorage.removeItem("username");
-  localStorage.removeItem("avatarUrl");
+  localStorage.removeItem('accessToken');
+  localStorage.removeItem('apiKey');
+  localStorage.removeItem('username');
+  localStorage.removeItem('avatarUrl');
 
-  alert("Du er nå logget ut!");
+  alert('Du er nå logget ut!');
   window.location.reload();
 }
